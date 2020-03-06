@@ -62,7 +62,7 @@ class CobblerLiteSync(object):
         if distro is None:
             return
         # copy image files to images/$name in webdir & tftpboot:
-        self.sync.tftpgen.copy_single_distro_files(distro, self.settings.webdir, True)
+        self.sync.tftpgen.copy_single_distro_files(distro, self.settings.webdir)
         self.tftpd.add_single_distro(distro)
 
         # create the symlink for this distro

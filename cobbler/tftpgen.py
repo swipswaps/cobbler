@@ -83,8 +83,8 @@ class TFTPGen(object):
 
         # FIXME: using logging module so this ends up in cobbler.log?
 
-    def copy_single_distro_files(self, d, dirtree, symlink_ok):
-        distros = os.path.join(dirtree, "images")
+    def copy_single_distro_files(self, d, dest):
+        distros = os.path.join(dest, "images")
         distro_dir = os.path.join(distros, d.name)
         utils.mkdir(distro_dir)
         kernel = utils.find_kernel(d.kernel)    # full path
@@ -100,21 +100,43 @@ class TFTPGen(object):
         # configurations the synchronization is still necessary
         if not utils.file_is_remote(kernel):
             b_kernel = os.path.basename(kernel)
-            dst1 = os.path.join(distro_dir, b_kernel)
-            utils.linkfile(kernel, dst1, symlink_ok=symlink_ok, api=self.api, logger=self.logger)
+            dst = os.path.join(distro_dir, b_kernel)
+
+            abs_path = os.path.join(dest, kernel)
+            # We do have a relative file path inside chroot (www/tftp/..)
+            # We try to link this (have to do this ourselves)
+            # and we have to explicitly remove/delete if the link/file existed already
+            if os.path.is_file(abs_path):
+                if os.path.is_file(dst):
+                    self.logger.info("removing: %s" % dst)
+                    os.remove(dst)
+                kernel = os.path.join("../../", kernel)
+                os.symlink(kernel, dst)
+            else:
+                utils.linkfile(kernel, dst, False, api=self.api, logger=self.logger)
         else:
             b_kernel = os.path.basename(kernel)
-            dst1 = os.path.join(distro_dir, b_kernel)
-            utils.copyremotefile(kernel, dst1, api=None, logger=self.logger)
+            dst = os.path.join(distro_dir, b_kernel)
+            utils.copyremotefile(kernel, dst, api=None, logger=self.logger)
 
         if not utils.file_is_remote(initrd):
             b_initrd = os.path.basename(initrd)
-            dst2 = os.path.join(distro_dir, b_initrd)
-            utils.linkfile(initrd, dst2, symlink_ok=symlink_ok, api=self.api, logger=self.logger)
+            dst = os.path.join(distro_dir, b_initrd)
+
+            abs_path = os.path.join(dest, initrd)
+            # look above at kernel part why this is done
+            if os.path.is_file(abs_path):
+                if os.path.is_file(dst):
+                    self.logger.info("removing: %s" % dst)
+                    os.remove(dst)
+                initrd = os.path.join("../../", initrd)
+                os.symlink(kernel, dst)
+            else:
+                utils.linkfile(initrd, dst, False, api=self.api, logger=self.logger)
         else:
             b_initrd = os.path.basename(initrd)
-            dst1 = os.path.join(distro_dir, b_initrd)
-            utils.copyremotefile(initrd, dst1, api=None, logger=self.logger)
+            dst = os.path.join(distro_dir, b_initrd)
+            utils.copyremotefile(initrd, dst, api=None, logger=self.logger)
 
     def copy_single_image_files(self, img):
         images_dir = os.path.join(self.bootloc, "images2")

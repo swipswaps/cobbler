@@ -105,7 +105,7 @@ class CobblerSync(object):
         for d in self.distros:
             try:
                 self.logger.info("copying files for distro: %s" % d.name)
-                self.tftpgen.copy_single_distro_files(d, self.settings.webdir, True)
+                self.tftpgen.copy_single_distro_files(d, self.settings.webdir)
                 self.tftpgen.write_templates(d, write_file=True)
             except CX as e:
                 self.logger.error(e.value)
