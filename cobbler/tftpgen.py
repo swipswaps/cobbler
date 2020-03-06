@@ -53,7 +53,7 @@ class TFTPGen(object):
         self.templar = templar.Templar(collection_mgr)
         self.bootloc = self.settings.tftpboot_location
 
-    def copy_bootloaders(self):
+    def copy_bootloaders(self, dest):
         """
         Copy bootloaders to the configured tftpboot directory
         NOTE: we support different arch's if defined in
@@ -61,6 +61,7 @@ class TFTPGen(object):
         """
         src = self.settings.bootloaders_dir
         dest = self.bootloc
+
         # unfortunately using shutils copy_tree the dest directory must not exist,
         # but we must not delete an already partly synced /srv/tftp dir here.
         # rsync is very convenient here, being very fast on an already copied folder
