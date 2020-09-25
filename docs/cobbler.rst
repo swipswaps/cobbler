@@ -620,8 +620,35 @@ Example:
 
     $ cobbler aclsetup
 
-Cobbler buildiso
+cobbler buildiso
 ================
+
+All parameters are optional on the CLI.
+
++--------------+-------------------------------------------------------------------------------------------------------+
+| Name         | Description                                                                                           |
++--------------+-------------------------------------------------------------------------------------------------------+
+| iso          | Output ISO to this file. If the file exists it will be trunkated to zero before.                      |
++--------------+-------------------------------------------------------------------------------------------------------+
+| profiles     | Use these profiles only for collection information.                                                   |
++--------------+-------------------------------------------------------------------------------------------------------+
+| systems      | Use these systems only for collection information.                                                    |
++--------------+-------------------------------------------------------------------------------------------------------+
+| tempdir      | Working directory for building the ISO.                                                               |
++--------------+-------------------------------------------------------------------------------------------------------+
+| distro       | Used with ``--standalone`` and ``--airgapped`` to create a distro-based ISO including all associated  |
+|              | profiles/systems.                                                                                     |
++--------------+-------------------------------------------------------------------------------------------------------+
+| standalone   | Creates a standalone ISO with all required distribution files but without any added repositories.     |
++--------------+-------------------------------------------------------------------------------------------------------+
+| airgapped    | Creates a standalone ISO with all distro and repo files for disconnected system installation.         |
++--------------+-------------------------------------------------------------------------------------------------------+
+| source       | Used with --standalone to specify a source for the distribution files.                                |
++--------------+-------------------------------------------------------------------------------------------------------+
+| exclude-dns  | Prevents addition of name server addresses to the kernel boot options.                                |
++--------------+-------------------------------------------------------------------------------------------------------+
+| mkisofs-opts | Extra options for mkisofs.                                                                            |
++--------------+-------------------------------------------------------------------------------------------------------+
 
 Example:
 
