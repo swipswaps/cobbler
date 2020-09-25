@@ -116,9 +116,11 @@ class BuildIso(object):
         :type prefix: str
         """
         if not os.path.exists(distro.kernel):
-            utils.die(self.logger, "path does not exist: %s" % distro.kernel)
+            self.logger.error("path does not exist: %s" % distro.kernel)
+            return
         if not os.path.exists(distro.initrd):
-            utils.die(self.logger, "path does not exist: %s" % distro.initrd)
+            self.logger.error("path does not exist: %s" % distro.initrd)
+            return
         if prefix is None:
             shutil.copyfile(distro.kernel, os.path.join(destdir, "%s" % os.path.basename(distro.kernel)))
             shutil.copyfile(distro.initrd, os.path.join(destdir, "%s" % os.path.basename(distro.initrd)))
@@ -142,7 +144,8 @@ class BuildIso(object):
         elif list_type == 'system':
             all_objs = [system for system in self.api.systems()]
         else:
-            utils.die(self.logger, "Invalid list_type argument: " + list_type)
+            self.logger.error("Invalid list_type argument: %s" % list_type)
+            return
 
         all_objs.sort(key=lambda profile: profile.name)
 
@@ -161,7 +164,8 @@ class BuildIso(object):
             self.logger.warning("WARNING: %s is not a valid %s" % (bad_name, list_type))
 
         if not which_objs:
-            utils.die(self.logger, "No valid systems or profiles were specified.")
+            self.logger.error("No valid systems or profiles were specified.")
+            return
 
         return which_objs
 
@@ -493,7 +497,8 @@ class BuildIso(object):
         # systems) with sort=True for profile/system heirarchy to allow menu indenting
         distro = self.api.find_distro(distname)
         if distro is None:
-            utils.die(self.logger, "distro %s was not found, aborting" % distname)
+            self.logger.error("distro %s was not found, aborting" % distname)
+            return
         descendants = distro.get_descendants(sort=True)
         profiles = utils.input_string_or_list(profiles)
 
@@ -511,8 +516,9 @@ class BuildIso(object):
                 (source_head, source_tail) = os.path.split(source_head)
             # Can't find the source, raise an error
             if not found_source:
-                utils.die(self.logger, "Error, no installation source found. When building a standalone ISO, you must "
-                                       "specify a --source if the distro install tree is not hosted locally")
+                self.logger.error("Error, no installation source found. When building a standalone ISO, you must "
+                                  "specify a --source if the distro install tree is not hosted locally")
+                return
 
         self.logger.info("copying kernels and initrds for standalone distro")
         self.copy_boot_files(distro, isolinuxdir, None)
@@ -578,13 +584,16 @@ class BuildIso(object):
                                  + ", which %%s; cannot build airgapped ISO")
 
                     if repo_obj is None:
-                        utils.die(self.logger, error_fmt % "does not exist")
+                        self.logger.error(error_fmt % "does not exist")
+                        return
                     if not repo_obj.mirror_locally:
-                        utils.die(self.logger, error_fmt % "is not configured for local mirroring")
+                        self.logger.error(error_fmt % "is not configured for local mirroring")
+                        return
                     # FIXME: don't hardcode
                     mirrordir = os.path.join(self.settings.webdir, "repo_mirror", repo_obj.name)
                     if not os.path.exists(mirrordir):
-                        utils.die(self.logger, error_fmt % "has a missing local mirror directory")
+                        self.logger.error(error_fmt % "has a missing local mirror directory")
+                        return
 
                     repo_names_to_copy[repo_obj.name] = mirrordir
 
@@ -622,7 +631,8 @@ class BuildIso(object):
                 ok = utils.rsync_files(src, dst, "--exclude=TRANS.TBL --exclude=cache/ --no-g",
                                        logger=self.logger, quiet=True)
                 if not ok:
-                    utils.die(self.logger, "rsync of repo '" + repo_name + "' failed")
+                    self.logger.error("rsync of repo '%s' failed" % repo_name)
+                    return
 
         # copy distro files last, since they take the most time
         cmd = "rsync -rlptgu --exclude=boot.cat --exclude=TRANS.TBL --exclude=isolinux/ %s/ %s/../"\
@@ -630,7 +640,8 @@ class BuildIso(object):
         self.logger.info("- copying distro %s files (%s)" % (distname, cmd))
         rc = utils.subprocess_call(self.logger, cmd, shell=True)
         if rc:
-            utils.die(self.logger, "rsync of distro files failed")
+            self.logger.error("rsync of distro files failed")
+            return
 
     def run(self, iso=None, buildisodir=None, profiles=None, systems=None, distro=None, standalone=None, airgapped=None,
             source=None, exclude_dns=None, xorrisofs_opts=None):
@@ -656,22 +667,27 @@ class BuildIso(object):
 
         # the distro option is for stand-alone builds only
         if not standalone and distro is not None:
-            utils.die(self.logger, "The --distro option should only be used when creating a standalone or airgapped ISO")
+            self.logger.error("The --distro option should only be used when creating a standalone or airgapped ISO")
+            return
         # if building standalone, we only want --distro and --profiles (optional), systems are disallowed
         if standalone:
             if systems is not None:
-                utils.die(self.logger, "When building a standalone ISO, use --distro and --profiles only, not --systems")
+                self.logger.error("When building a standalone ISO, use --distro and --profiles only, not --systems")
+                return
             elif distro is None:
-                utils.die(self.logger, "When building a standalone ISO, you must specify a --distro")
+                self.logger.error("When building a standalone ISO, you must specify a --distro")
+                return
             if source is not None and not os.path.exists(source):
-                utils.die(self.logger, "The source specified (%s) does not exist" % source)
+                self.logger.error("The source specified (%s) does not exist" % source)
+                return
 
             # insure all profiles specified are children of the distro
             if profiles:
                 which_profiles = self.filter_systems_or_profiles(profiles, 'profile')
                 for profile in which_profiles:
                     if profile.distro != distro:
-                        utils.die(self.logger, "When building a standalone ISO, all --profiles must be under --distro")
+                        self.logger("When building a standalone ISO, all --profiles must be under --distro")
+                        return
 
         # if iso is none, create it in . as "autoinst.iso"
         if iso is None:
@@ -681,7 +697,8 @@ class BuildIso(object):
             buildisodir = self.settings.buildisodir
         else:
             if not os.path.isdir(buildisodir):
-                utils.die(self.logger, "The --tempdir specified is not a directory")
+                self.logger("The --tempdir specified is not a directory")
+                return
 
             (buildisodir_head, buildisodir_tail) = os.path.split(os.path.normpath(buildisodir))
             if buildisodir_tail != "buildiso":
@@ -731,7 +748,8 @@ class BuildIso(object):
             for k, v in file_copy_success:
                 if not v:
                     self.logger.error("File not found: %s" % k)
-            utils.die(self.logger, "Required file(s) not found. Please check your syslinux installation")
+            self.logger.error("Required file(s) not found. Please check your syslinux installation")
+            return
 
         if standalone or airgapped:
             self.generate_standalone_iso(imagesdir, isolinuxdir, distro, source, airgapped, profiles)
@@ -750,10 +768,9 @@ class BuildIso(object):
 
         rc = utils.subprocess_call(self.logger, cmd, shell=True)
         if rc != 0:
-            utils.die(self.logger, "xorrisofs failed")
+            self.logger.error("xorrisofs failed with non zero exit code!")
+            return
 
         self.logger.info("ISO build complete")
         self.logger.info("You may wish to delete: %s" % buildisodir)
         self.logger.info("The output file is: %s" % iso)
-
-# EOF
