@@ -21,13 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 02110-1301  USA
 """
 
-
-from builtins import str
-from builtins import object
 import os
 import os.path
 import re
 import shutil
+from builtins import object
+from builtins import str
 
 from cobbler import clogger
 from cobbler import utils
@@ -37,11 +36,14 @@ class BuildIso(object):
     """
     Handles conversion of internal state to the isolinux tree layout
     """
-    def __init__(self, collection_mgr, verbose=False, logger=None):
+
+    def __init__(self, collection_mgr, logger=None):
         """
         Constructor
+
+        :param collection_mgr: The collection manager instance which holds all information about object ins Cobbler.
+        :param logger: The logger which should be used for documenting things.
         """
-        self.verbose = verbose
         self.collection_mgr = collection_mgr
         self.settings = collection_mgr.settings()
         self.api = collection_mgr.api
@@ -56,11 +58,11 @@ class BuildIso(object):
             logger = clogger.Logger()
         self.logger = logger
         # grab the header from buildiso.header file
-        header_src = open(os.path.join(self.settings.iso_template_dir, "buildiso.template"))
-        self.iso_template = header_src.read()
-        header_src.close()
+        with open(os.path.join(self.settings.iso_template_dir, "buildiso.template")) as header_src:
+            self.iso_template = header_src.read()
 
-    def add_remaining_kopts(self, koptdict):
+    @staticmethod
+    def add_remaining_kopts(koptdict):
         """
         Add remaining kernel_options to append_line
 
@@ -92,9 +94,9 @@ class BuildIso(object):
 
     def make_shorter(self, distname):
         """
-        Return A short distro identifier.
+        Return a short distro identifier.
 
-        :param distname: The distro name to return a identifieer for.
+        :param distname: The distro name to return an identifier for.
         :type distname: str
         :return: A short distro identifier
         :rtype: str
@@ -241,7 +243,7 @@ class BuildIso(object):
                 append_line += " auto-install/enable=true url=%s" % data["autoinstall"]
                 if "proxy" in data and data["proxy"] != "":
                     append_line += " mirror/http/proxy=%s" % data["proxy"]
-            append_line += self.add_remaining_kopts(data["kernel_options"])
+            append_line += BuildIso.add_remaining_kopts(data["kernel_options"])
             cfg.write(append_line)
 
         cfg.write("\nMENU SEPARATOR\n")
@@ -351,19 +353,24 @@ class BuildIso(object):
                     del data["kernel_options"]["nameserver"]
 
             if dist.breed in ["ubuntu", "debian"]:
-                if "netcfg/choose_interface" in data["kernel_options"] and data["kernel_options"]["netcfg/choose_interface"] != "":
+                if "netcfg/choose_interface" in data["kernel_options"] and data["kernel_options"][
+                    "netcfg/choose_interface"] != "":
                     my_int = data["kernel_options"]["netcfg/choose_interface"]
                     del data["kernel_options"]["netcfg/choose_interface"]
-                if "netcfg/get_ipaddress" in data["kernel_options"] and data["kernel_options"]["netcfg/get_ipaddress"] != "":
+                if "netcfg/get_ipaddress" in data["kernel_options"] and data["kernel_options"][
+                    "netcfg/get_ipaddress"] != "":
                     my_ip = data["kernel_options"]["netcfg/get_ipaddress"]
                     del data["kernel_options"]["netcfg/get_ipaddress"]
-                if "netcfg/get_netmask" in data["kernel_options"] and data["kernel_options"]["netcfg/get_netmask"] != "":
+                if "netcfg/get_netmask" in data["kernel_options"] and data["kernel_options"][
+                    "netcfg/get_netmask"] != "":
                     my_mask = data["kernel_options"]["netcfg/get_netmask"]
                     del data["kernel_options"]["netcfg/get_netmask"]
-                if "netcfg/get_gateway" in data["kernel_options"] and data["kernel_options"]["netcfg/get_gateway"] != "":
+                if "netcfg/get_gateway" in data["kernel_options"] and data["kernel_options"][
+                    "netcfg/get_gateway"] != "":
                     my_gw = data["kernel_options"]["netcfg/get_gateway"]
                     del data["kernel_options"]["netcfg/get_gateway"]
-                if "netcfg/get_nameservers" in data["kernel_options"] and data["kernel_options"]["netcfg/get_nameservers"] != "":
+                if "netcfg/get_nameservers" in data["kernel_options"] and data["kernel_options"][
+                    "netcfg/get_nameservers"] != "":
                     my_dns = data["kernel_options"]["netcfg/get_nameservers"]
                     del data["kernel_options"]["netcfg/get_nameservers"]
 
@@ -378,7 +385,9 @@ class BuildIso(object):
                         if idata["management"] and idata["interface_type"] in ["bond", "bridge"]:
                             # bonded/bridged management interface
                             mgmt_ints_multi.append(iname)
-                        if idata["management"] and idata["interface_type"] not in ["bond", "bridge", "bond_slave", "bridge_slave", "bonded_bridge_slave"]:
+                        if idata["management"] and idata["interface_type"] not in ["bond", "bridge", "bond_slave",
+                                                                                   "bridge_slave",
+                                                                                   "bonded_bridge_slave"]:
                             # single management interface
                             mgmt_ints.append(iname)
 
@@ -386,7 +395,8 @@ class BuildIso(object):
                     # Bonded/bridged management interface, find a slave interface if eth0 is a slave use that (it's what
                     # people expect)
                     for (iname, idata) in list(data["interfaces"].items()):
-                        if idata["interface_type"] in ["bond_slave", "bridge_slave", "bonded_bridge_slave"] and idata["interface_master"] == mgmt_ints_multi[0]:
+                        if idata["interface_type"] in ["bond_slave", "bridge_slave", "bonded_bridge_slave"] and idata[
+                            "interface_master"] == mgmt_ints_multi[0]:
                             slave_ints.append(iname)
 
                     if "eth0" in slave_ints:
@@ -474,7 +484,7 @@ class BuildIso(object):
                         append_line += " netcfg/get_nameservers=%s" % my_dns
 
             # Add remaining kernel_options to append_line
-            append_line += self.add_remaining_kopts(data["kernel_options"])
+            append_line += BuildIso.add_remaining_kopts(data["kernel_options"])
             cfg.write(append_line)
 
         cfg.write("\n")
@@ -564,7 +574,7 @@ class BuildIso(object):
                 append_line += " auto-install/enable=true preseed/file=/cdrom/isolinux/%s.cfg" % descendant.name
 
             # add remaining kernel_options to append_line
-            append_line += self.add_remaining_kopts(data["kernel_options"])
+            append_line += BuildIso.add_remaining_kopts(data["kernel_options"])
             cfg.write(append_line)
 
             if descendant.COLLECTION_TYPE == 'profile':
@@ -628,14 +638,14 @@ class BuildIso(object):
                 dst = os.path.join(repodir, repo_name)
                 self.logger.info(" - copying repo '" + repo_name + "' for airgapped ISO")
 
-                ok = utils.rsync_files(src, dst, "--exclude=TRANS.TBL --exclude=cache/ --no-g",
-                                       logger=self.logger, quiet=True)
+                ok = utils.rsync_files(src, dst, "--exclude=TRANS.TBL --exclude=cache/ --no-g", logger=self.logger,
+                                       quiet=True)
                 if not ok:
                     self.logger.error("rsync of repo '%s' failed" % repo_name)
                     return
 
         # copy distro files last, since they take the most time
-        cmd = "rsync -rlptgu --exclude=boot.cat --exclude=TRANS.TBL --exclude=isolinux/ %s/ %s/../"\
+        cmd = "rsync -rlptgu --exclude=boot.cat --exclude=TRANS.TBL --exclude=isolinux/ %s/ %s/../" \
               % (filesource, isolinuxdir)
         self.logger.info("- copying distro %s files (%s)" % (distname, cmd))
         rc = utils.subprocess_call(self.logger, cmd, shell=True)
@@ -652,7 +662,7 @@ class BuildIso(object):
         :param buildisodir: This overwrites the directory from the settings in which the iso is built in.
         :param profiles:
         :param systems: Don't use that when building standalone isos.
-        :param distro: (For standalone only)
+        :param distro: For standalone only.
         :param standalone: This means that no network connection is needed to install the generated iso.
         :type standalone: bool
         :param airgapped: This option implies standalone=True.
@@ -724,8 +734,7 @@ class BuildIso(object):
 
         self.logger.info("copying miscellaneous files")
 
-        files_to_copy = ["isolinux.bin", "menu.c32", "chain.c32",
-                         "ldlinux.c32", "libcom32.c32", "libutil.c32"]
+        files_to_copy = ["isolinux.bin", "menu.c32", "chain.c32", "ldlinux.c32", "libcom32.c32", "libutil.c32"]
 
         optional_files = ["ldlinux.c32", "libcom32.c32", "libutil.c32"]
 

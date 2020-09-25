@@ -26,7 +26,8 @@ import os
 import random
 import tempfile
 
-from cobbler.actions import status, dlcontent, hardlink, sync, buildiso, replicate, report, log, acl, check, reposync
+from cobbler.actions import status, dlcontent, hardlink, sync, replicate, report, log, acl, check, reposync
+from cobbler.actions.buildiso import BuildIso
 from cobbler import autoinstall_manager
 from cobbler import clogger
 from cobbler.cobbler_collections import manager
@@ -1623,7 +1624,7 @@ class CobblerAPI(object):
         :param xorrisofs_opts:
         :param logger: The logger to audit the removal with.
         """
-        builder = buildiso.BuildIso(self._collection_mgr, logger=logger)
+        builder = BuildIso(self._collection_mgr, logger=logger)
         builder.run(
             iso=iso, profiles=profiles, systems=systems, buildisodir=buildisodir, distro=distro, standalone=standalone,
             airgapped=airgapped, source=source, exclude_dns=exclude_dns, xorrisofs_opts=xorrisofs_opts
