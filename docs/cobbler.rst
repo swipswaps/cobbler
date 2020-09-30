@@ -623,7 +623,8 @@ Example:
 cobbler buildiso
 ================
 
-All parameters are optional on the CLI.
+All parameters are optional on the CLI. This command may not behave like you expect it without installing additional
+dependencies and configuration. The in depth explanation can be found at :ref:`building-isos`.
 
 +--------------+-------------------------------------------------------------------------------------------------------+
 | Name         | Description                                                                                           |

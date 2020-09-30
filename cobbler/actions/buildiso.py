@@ -654,24 +654,25 @@ class BuildIso(object):
             self.logger.error("rsync of distro files failed")
             return
 
-    def run(self, iso=None, buildisodir=None, profiles=None, systems=None, distro=None, standalone=None, airgapped=None,
-            source=None, exclude_dns=None, xorrisofs_opts=None):
-        """
+    def run(self, iso="autoinst.iso", buildisodir=None, profiles=None, systems=None, distro=None, standalone=False,
+            airgapped=False, source=None, exclude_dns=None, xorrisofs_opts=None):
+        r"""
         Run the whole iso generation from bottom to top. This is the only method which should be called from non-class
         members.
 
         :param iso: The name of the iso. Defaults to "autoinst.iso".
+        :type iso: str
         :param buildisodir: This overwrites the directory from the settings in which the iso is built in.
         :param profiles:
-        :param systems: Don't use that when building standalone isos.
+        :param systems: Don't use that when building standalone ISOs.
         :param distro: For standalone only.
         :param standalone: This means that no network connection is needed to install the generated iso.
         :type standalone: bool
-        :param airgapped: This option implies standalone=True.
+        :param airgapped: This option implies ``standalone=True``.
         :type airgapped: bool
         :param source: If the iso should be offline available this is the path to the sources of the image.
         :param exclude_dns: Whether the repositories have to be locally available or the internet is reachable.
-        :param xorrisofs_opts: xorrisofs options to include additionally.
+        :param xorrisofs_opts: ``xorrisofs`` options to include additionally.
         """
 
         if airgapped is True:
@@ -701,7 +702,6 @@ class BuildIso(object):
                         self.logger("When building a standalone ISO, all --profiles must be under --distro")
                         return
 
-        # if iso is none, create it in . as "autoinst.iso"
         if iso is None:
             iso = "autoinst.iso"
 
@@ -774,8 +774,8 @@ class BuildIso(object):
 
         # using xorrisofs instead of mkisofs nowadays, it is available everywhere...
         cmd = "xorrisofs -o %s %s -r -b isolinux/isolinux.bin -c isolinux/boot.cat" % (iso, xorrisofs_opts)
-        cmd = cmd + " -no-emul-boot -boot-load-size 4"
-        cmd = cmd + r" -boot-info-table -V Cobbler\ Install -R -J %s" % buildisodir
+        cmd += " -no-emul-boot -boot-load-size 4"
+        cmd += r" -boot-info-table -V Cobbler\ Install -R -J %s" % buildisodir
 
         rc = utils.subprocess_call(self.logger, cmd, shell=True)
         if rc != 0:

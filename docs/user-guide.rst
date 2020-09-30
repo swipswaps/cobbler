@@ -7,6 +7,7 @@ User Guide
 
    Web User Interface <user-guide/web-interface>
    Configuration Management Integrations <user-guide/configuration-management-integrations>
+   Building ISOs <user-guide/building-isos>
 
 
 API
