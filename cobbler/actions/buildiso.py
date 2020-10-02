@@ -38,10 +38,9 @@ class BuildIso(object):
     """
 
     def __init__(self, collection_mgr, logger=None):
-        """
-        Constructor
+        """Constructor which initializes things here. The collection manager pulls all other dependencies in.
 
-        :param collection_mgr: The collection manager instance which holds all information about object ins Cobbler.
+        :param collection_mgr: The collection manager instance which holds all information about objects in Cobbler.
         :param logger: The logger which should be used for documenting things.
         """
         self.collection_mgr = collection_mgr
@@ -63,8 +62,7 @@ class BuildIso(object):
 
     @staticmethod
     def add_remaining_kopts(koptdict):
-        """
-        Add remaining kernel_options to append_line
+        """Add remaining kernel_options to append_line
 
         :param koptdict: The kernel options which are not present in append_line.
         :type koptdict: dict
@@ -92,8 +90,7 @@ class BuildIso(object):
         return append_line
 
     def make_shorter(self, distname):
-        """
-        Return a short distro identifier.
+        """Return a short distro identifier.
 
         :param distname: The distro name to return an identifier for.
         :type distname: str
@@ -108,8 +105,7 @@ class BuildIso(object):
             return str(self.distctr)
 
     def copy_boot_files(self, distro, destdir, prefix=None):
-        """
-        Copy kernel/initrd to destdir with (optional) newfile prefix
+        """Copy kernel/initrd to destdir with (optional) newfile prefix
 
         :param distro: Distro object to return the boot files for.
         :param destdir: The destionation direcotry.
@@ -130,9 +126,8 @@ class BuildIso(object):
             shutil.copyfile(distro.initrd, os.path.join(destdir, "%s.img" % prefix))
 
     def filter_systems_or_profiles(self, selected_items, list_type):
-        """
-        Return a list of valid profile or system objects selected from all profiles or systems by name, or everything if
-        selected_items is empty.
+        """Return a list of valid profile or system objects selected from all profiles or systems by name, or everything
+        if selected_items is empty.
 
         :param selected_items: The filter to match certain objects with. The filter will be applied to the object name.
         :param list_type: Must be "profile" or "system".
@@ -171,8 +166,7 @@ class BuildIso(object):
         return filtered_objects
 
     def generate_netboot_iso(self, imagesdir, isolinuxdir, profiles=None, systems=None, exclude_dns=None):
-        """
-        Create bootable CD image to be used for network installations
+        """Create bootable CD image to be used for network installations.
 
         :param imagesdir: Currently unused parameter.
         :param isolinuxdir: The parent directory where the isolinux.cfg is located.
@@ -492,8 +486,7 @@ class BuildIso(object):
             cfg.writelines(cfglines)
 
     def generate_standalone_iso(self, imagesdir, isolinuxdir, distname, filesource, airgapped, profiles):
-        """
-        Create bootable CD image to be used for handsoff CD installations
+        """Create bootable CD image to be used for handsoff CD installations.
 
         :param imagesdir: Unused Parameter.
         :param isolinuxdir: The parent directory where the file isolinux.cfg is located at.
@@ -656,15 +649,18 @@ class BuildIso(object):
 
     def run(self, iso="autoinst.iso", buildisodir=None, profiles=None, systems=None, distro=None, standalone=False,
             airgapped=False, source=None, exclude_dns=None, xorrisofs_opts=None):
-        r"""Run the whole iso generation from bottom to top.
+        r"""Run the whole iso generation from bottom to top. Per default this builds an ISO for all available systems
+        and profiles.
 
-        This is the only method which should be called from non-class members.
+        This is the only method which should be called from non-class members. The ``profiles`` and ``system``
+        parameters can be combined.
 
         :param iso: The name of the iso. Defaults to "autoinst.iso".
         :type iso: str
         :param buildisodir: This overwrites the directory from the settings in which the iso is built in.
-        :param profiles:
-        :param systems: Don't use that when building standalone ISOs.
+        :param profiles: The filter to generate the ISO only for selected profiles.
+        :param systems: Don't use that when building standalone ISOs. The filter to generate the ISO only for selected
+                        systems.
         :param distro: For standalone only.
         :param standalone: This means that no network connection is needed to install the generated iso.
         :type standalone: bool

@@ -70,7 +70,7 @@ class CobblerAPI(object):
         """
         Constructor
 
-        :param is_cobblerd: Wether this API is run as a deamon or not.
+        :param is_cobblerd: Whether this API is run as a daemon or not.
         :type is_cobblerd: bool
         """
 
