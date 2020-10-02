@@ -38,3 +38,17 @@ Current Workflow
 When you want to use cloud init with the new subiquity installer in Ubuntu 20.04, please keep in mind that the nocloud
 source has to be quoted in grub, otherwise it won't work. For syslinux however, the nocloud source mustn't be quoted!
 That said, currently you can't use cloud init profiles for Ubuntu 20.04 simultaneously in both syslinux and grub.
+
+Building Standalone ISOs
+########################
+
+You need to give the parameters:
+
+* ``--standalone``
+* ``--distro``
+* ``--source``
+
+Building Netinstaller ISOs
+##########################
+
+TODO
