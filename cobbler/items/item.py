@@ -289,6 +289,8 @@ class Item(object):
         :rtype: list
         """
         keys = list(self.children.keys())
+        if len(keys) == 0:
+            return []
         if sorted:
             keys.sort()
         results = []
