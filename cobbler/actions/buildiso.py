@@ -90,7 +90,8 @@ class BuildIso(object):
         return append_line
 
     def make_shorter(self, distname):
-        """Return a short distro identifier.
+        """Return a short distro identifier which is basically an internal counter which is mapped via the real distro
+        name.
 
         :param distname: The distro name to return an identifier for.
         :type distname: str
