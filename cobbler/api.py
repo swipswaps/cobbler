@@ -1616,10 +1616,11 @@ class CobblerAPI(object):
 
         :param iso: The name of the ISO. Defaults to ``autoinst.iso``.
         :type iso: str
-        :param profiles:
-        :param systems:
+        :param profiles: Use these profiles only
+        :param systems: Use these systems only
         :param buildisodir: This overwrites the directory from the settings in which the iso is built in.
-        :param distro:
+        :param distro: Used with ``--standalone`` and ``--airgapped`` to create a distro-based ISO including all
+                       associated.
         :param standalone: This means that no network connection is needed to install the generated iso.
         :type standalone: bool
         :param airgapped: This option implies ``standalone=True``.

@@ -20,21 +20,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 02110-1301  USA
 """
 
-from builtins import str
-from builtins import object
 import optparse
 import os
 import sys
 import time
 import traceback
 import xmlrpc.client
+import xmlrpc.client
+from builtins import object
+from builtins import str
 
 from cobbler import field_info
-from cobbler.items import package, system, image, profile, repo, mgmtclass, distro, file
 from cobbler import settings
 from cobbler import utils
 from cobbler.cexceptions import NotImplementedException
-
+from cobbler.items import package, system, image, profile, repo, mgmtclass, distro, file
 
 OBJECT_ACTIONS_MAP = {
     "distro": "add copy edit find list remove rename report".split(" "),

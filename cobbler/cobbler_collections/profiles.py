@@ -40,7 +40,6 @@ class Profiles(collection.Collection):
     def collection_types() -> str:
         return "profiles"
 
-
     def factory_produce(self, collection_mgr, item_dict):
         """
         Return a Distro forged from item_dict

@@ -151,7 +151,7 @@ class CobblerXMLRPCInterface(object):
         """
         Generates an ISO in /var/www/cobbler/pub that can be used to install profiles without using PXE.
 
-        :param options: Not known what this parameter does.
+        :param options: This parameter does contain the options passed from the CLI or remote API who called this.
         :param token: The API-token obtained via the login() method. The API-token obtained via the login() method.
         :return: The id of the task which was started.
         :rtype: str
