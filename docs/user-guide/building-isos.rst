@@ -18,7 +18,16 @@ wish to boot with your Cobbler installation: ``grob2-ARCH-efi-modules``.
 The script mkgrub.sh
 ####################
 
-This script can create a bootable grub2 Bootloader in the EFI format.
+This script can create a bootable grub2 Bootloader in the EFI format. Thus it collects all modules and creates a
+bootable grub2 bootloader. The folder where this is executed is not relevant.
+
+To build grub bootloaders for other architectures install the packages and then execute the script against the newly
+installed directories. openSUSE has enabled you to do this but other distros may not decide to do this. If your distro
+does not enable you to do this you need to enable yourself for this. For this you need advanced grub knowledge, thus
+this is not part of the tutorial.
+
+This script must be ran after every grub2 package update. For the first time this script is run in the POST section
+of the Cobbler RPM.
 
 The script can be manipulated in the following way:
 
