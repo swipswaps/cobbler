@@ -89,6 +89,6 @@ link_loader "/usr/share/efi/x86_64/grub.efi" "grub/grub.efi"
 link_loader "${SYSLINUX_DIR}/pxelinux.0" "pxelinux.0"
 link_loader "${SYSLINUX_DIR}/menu.c32" "menu.c32"
 link_loader "${SYSLINUX_DIR}/ldlinux.c32" "ldlinux.c32"
-link_loader "$SYSLINUX_DIR}/memdisk" "memdisk"
+link_loader "${SYSLINUX_DIR}/memdisk" "memdisk"
 # ToDo: Do this properly if still used
 link_loader "/usr/share/*pxe/undionly.kpxe" "undionly.pxe"
