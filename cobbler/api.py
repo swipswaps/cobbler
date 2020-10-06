@@ -113,9 +113,8 @@ class CobblerAPI(object):
                 self.log("Failed to load signatures from %s: %s" % (self.settings().signature_path, e))
                 return
 
-            self.log("%d breeds and %d OS versions read from the signature file" % (
-                len(utils.get_valid_breeds()), len(utils.get_valid_os_versions()))
-                     )
+            self.log("%d breeds and %d OS versions read from the signature file"
+                     % (len(utils.get_valid_breeds()), len(utils.get_valid_os_versions())))
 
             self.authn = self.get_module_from_file(
                 "authentication",
