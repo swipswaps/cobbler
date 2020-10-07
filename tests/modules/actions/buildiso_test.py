@@ -46,7 +46,7 @@ class TestBuildiso:
         assert distroname in buildiso.distmap
         assert result == "1"
 
-    def test_copy_boot_files(self):
+    def test_copy_boot_files(self, collection_manager):
         # Arrange
         buildiso = BuildIso(collection_manager)
         # TODO: Where to get fakefiles from again?
@@ -60,23 +60,49 @@ class TestBuildiso:
         # Assert
         assert False
 
-    # TODO: Fill this with life
-    @pytest.mark.parametrize("itemlist,listtype,expected_result", [
-        ([], "system", []),
-        ([], "profile", []),
-        ([], "baditemtype", [])
-    ])
-    def test_filter_systems_or_profiles(self, itemlist, listtype, expected_result):
+    # This test is done thrice due to the fact that parametrize and fixtures currently cannot be mixed.
+    # For more see: https://github.com/pytest-dev/pytest/issues/349
+    def test_filter_systems_or_profiles_system(self, collection_manager):
         # Arrange
+        itemlist = []
         buildiso = BuildIso(collection_manager)
+        expected_result = []
 
         # Act
-        result = buildiso.filter_systems_or_profiles(itemlist, listtype)
+        result = buildiso.filter_systems_or_profiles(itemlist, "system")
 
         # Assert
         assert expected_result == result
 
-    def test_generate_netboot_iso(self):
+    # This test is done thrice due to the fact that parametrize and fixtures currently cannot be mixed.
+    # For more see: https://github.com/pytest-dev/pytest/issues/349
+    def test_filter_systems_or_profiles_profile(self, collection_manager):
+        # Arrange
+        itemlist = []
+        buildiso = BuildIso(collection_manager)
+        expected_result = []
+
+        # Act
+        result = buildiso.filter_systems_or_profiles(itemlist, "profile")
+
+        # Assert
+        assert expected_result == result
+
+    # This test is done thrice due to the fact that parametrize and fixtures currently cannot be mixed.
+    # For more see: https://github.com/pytest-dev/pytest/issues/349
+    def test_filter_systems_or_profiles_baditemtype(self, collection_manager):
+        # Arrange
+        itemlist = []
+        buildiso = BuildIso(collection_manager)
+        expected_result = []
+
+        # Act
+        result = buildiso.filter_systems_or_profiles(itemlist, "baditemtype")
+
+        # Assert
+        assert expected_result == result
+
+    def test_generate_netboot_iso(self, collection_manager):
         # Arrange
         buildiso = BuildIso(collection_manager)
 
@@ -86,7 +112,7 @@ class TestBuildiso:
         # Assert
         assert False
 
-    def test_generate_standalone_iso(self):
+    def test_generate_standalone_iso(self, collection_manager):
         # Arrange
         buildiso = BuildIso(collection_manager)
 
@@ -96,7 +122,7 @@ class TestBuildiso:
         # Assert
         assert False
 
-    def test_run(self):
+    def test_run(self, collection_manager):
         # Arrange
         buildiso = BuildIso(collection_manager)
 
