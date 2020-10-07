@@ -167,7 +167,7 @@ class BuildIso(object):
         return filtered_objects
 
     def generate_netboot_iso(self, imagesdir, isolinuxdir, profiles=None, systems=None, exclude_dns=None):
-        """Create bootable CD image to be used for network installations.
+        """Creates the ``isolinux.cfg`` for a network bootable ISO image.
 
         :param imagesdir: Currently unused parameter.
         :param isolinuxdir: The parent directory where the isolinux.cfg is located.
@@ -487,7 +487,8 @@ class BuildIso(object):
             cfg.writelines(cfglines)
 
     def generate_standalone_iso(self, imagesdir, isolinuxdir, distname, filesource, airgapped, profiles):
-        """Create bootable CD image to be used for handsoff CD installations.
+        """Creates the ``isolinux.cfg`` for a standalone or airgapped ISO image. And copies possible repositories to
+        the image source folder.
 
         :param imagesdir: Unused Parameter.
         :param isolinuxdir: The parent directory where the file isolinux.cfg is located at.
@@ -714,11 +715,9 @@ class BuildIso(object):
                 buildisodir = os.path.join(buildisodir, "buildiso")
 
         self.logger.info("using/creating buildisodir: %s" % buildisodir)
-        if not os.path.exists(buildisodir):
-            os.makedirs(buildisodir)
-        else:
+        if os.path.exists(buildisodir):
             shutil.rmtree(buildisodir)
-            os.makedirs(buildisodir)
+        os.makedirs(buildisodir)
 
         # if base of buildisodir does not exist, fail create all profiles unless filtered by "profiles"
 
