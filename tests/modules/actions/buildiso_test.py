@@ -1,9 +1,9 @@
 import pytest
 
-from api import CobblerAPI
+from cobbler.api import CobblerAPI
 from cobbler.actions.buildiso import BuildIso
-from cobbler_collections.manager import CollectionManager
-from items.distro import Distro
+from cobbler.cobbler_collections.manager import CollectionManager
+from cobbler.items.distro import Distro
 
 
 @pytest.fixture(scope="class")
