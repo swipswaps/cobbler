@@ -143,7 +143,7 @@ class System(item.Item):
 
     def make_clone(self):
         _dict = self.to_dict()
-        cloned = System(self.collection_mgr)
+        cloned = System()
         cloned.from_dict(_dict)
         return cloned
 
@@ -155,6 +155,7 @@ class System(item.Item):
         """
         Return object next highest up the tree.
         """
+        # TODO: Remove need to find this here. Move this into the collection. This is a data storage object.
         if (self.parent is None or self.parent == '') and self.profile:
             return self.collection_mgr.profiles().find(name=self.profile)
         elif (self.parent is None or self.parent == '') and self.image:
@@ -322,16 +323,21 @@ class System(item.Item):
 
 # ---
 
-    def set_dns_name(self, dns_name, interface):
+    def set_dns_name(self, dns_name, interface, allow_duplicate_hostnames):
         """
         Set DNS name for interface.
 
-        @param: str dns_name (dns name)
-        @param: str interface (interface name)
+        :param dns_name: DNS Name of the system
+        :type dns_name: str
+        :param interface: Name of the interface
+        :type interface: str
+        :param allow_duplicate_hostnames: Weather to check for duplicate hostnames or not in the Cobbler instance.
+        :type allow_duplicate_hostnames: bool
+
         @returns: True or CX
         """
         dns_name = validate.hostname(dns_name)
-        if dns_name != "" and utils.input_boolean(self.collection_mgr._settings.allow_duplicate_hostnames) is False:
+        if dns_name != "" and utils.input_boolean(allow_duplicate_hostnames) is False:
             matched = self.collection_mgr.api.find_items("system", {"dns_name": dns_name})
             for x in matched:
                 if x.name != self.name:
@@ -440,6 +446,7 @@ class System(item.Item):
 
     def set_virt_bridge(self, bridge, interface):
         if bridge == "":
+            # TODO: Fix direct access to settings.
             bridge = self.settings.default_virt_bridge
         intf = self.__get_interface(interface)
         intf["virt_bridge"] = bridge
@@ -633,14 +640,16 @@ class System(item.Item):
         """
         self.netboot_enabled = utils.input_boolean(netboot_enabled)
 
-    def set_autoinstall(self, autoinstall):
+    def set_autoinstall(self, autoinstall, collection_mgr):
         """
         Set the automatic installation template filepath, this must be a local file.
 
-        @param str local automatic installation template file path
+        :param autoinstall: Local automatic installation template file path.
+        :type autoinstall: str
+        :param collection_mgr: The collection manager to have access to all information in Cobbler.
         """
 
-        autoinstall_mgr = autoinstall_manager.AutoInstallationManager(self.collection_mgr)
+        autoinstall_mgr = autoinstall_manager.AutoInstallationManager(collection_mgr)
         self.autoinstall = autoinstall_mgr.validate_autoinstall_template_file_path(autoinstall)
 
     def set_power_type(self, power_type):
@@ -710,6 +719,7 @@ class System(item.Item):
                 self.set_dhcp_tag(value, interface)
 
             if field == "dnsname":
+                # TODO: Inject the allow duplicate hostnames value.
                 self.set_dns_name(value, interface)
 
             if field == "ifgateway":

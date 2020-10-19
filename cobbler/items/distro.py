@@ -96,7 +96,7 @@ class Distro(item.Item):
         :return: The cloned object. Not persisted on the disk or in a database.
         """
         _dict = self.to_dict()
-        cloned = Distro(self.collection_mgr)
+        cloned = Distro()
         cloned.from_dict(_dict)
         return cloned
 

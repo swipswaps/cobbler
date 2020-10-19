@@ -66,7 +66,7 @@ class File(resource.Resource):
         :return: The cloned instance of this object.
         """
         _dict = self.to_dict()
-        cloned = File(self.collection_mgr)
+        cloned = File()
         cloned.from_dict(_dict)
         return cloned
 

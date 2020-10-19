@@ -65,7 +65,7 @@ class Mgmtclass(item.Item):
         """
 
         _dict = self.to_dict()
-        cloned = Mgmtclass(self.collection_mgr)
+        cloned = Mgmtclass()
         cloned.from_dict(_dict)
         return cloned
 

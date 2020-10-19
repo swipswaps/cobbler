@@ -99,7 +99,7 @@ class Profile(item.Item):
         :return: The cloned instance of this object.
         """
         _dict = self.to_dict()
-        cloned = Profile(self.collection_mgr)
+        cloned = Profile()
         cloned.from_dict(_dict)
         return cloned
 
@@ -115,6 +115,7 @@ class Profile(item.Item):
         """
         Return object next highest up the tree.
         """
+        # TODO: Remove need to find this here. Move this into the collection. This is a data storage object.
         if not self.parent:
             if self.distro is None:
                 return None
@@ -141,7 +142,7 @@ class Profile(item.Item):
     #
 
     def set_parent(self, parent_name):
-        """
+        r"""
         Instead of a ``--distro``, set the parent of this object to another profile and use the values from the parent
         instead of this one where the values for this profile aren't filled in, and blend them together where they
         are dictionaries. Basically this enables profile inheritance. To use this, the object MUST have been
@@ -150,6 +151,7 @@ class Profile(item.Item):
 
         :param parent_name: The name of the parent object.
         """
+        # TODO: Remove need to find this here. Move this into the collection. This is a data storage object.
         old_parent = self.get_parent()
         if isinstance(old_parent, item.Item):
             old_parent.children.pop(self.name, 'pass')
@@ -173,6 +175,7 @@ class Profile(item.Item):
         """
         Sets the distro. This must be the name of an existing Distro object in the Distros collection.
         """
+        # TODO: Remove need to find this here. Move this into the collection. This is a data storage object.
         d = self.collection_mgr.distros().find(name=distro_name)
         if d is not None:
             old_parent = self.get_parent()
@@ -270,15 +273,16 @@ class Profile(item.Item):
         else:
             self.filename = filename.strip()
 
-    def set_autoinstall(self, autoinstall):
+    def set_autoinstall(self, autoinstall, collection_mgr):
         """
         Set the automatic OS installation template file path, this must be a local file.
 
         :param autoinstall: local automatic installation template path
         :type autoinstall: str
+        :param collection_mgr: The collection manager to have access to all information in Cobbler.
         """
 
-        autoinstall_mgr = autoinstall_manager.AutoInstallationManager(self.collection_mgr)
+        autoinstall_mgr = autoinstall_manager.AutoInstallationManager(collection_mgr)
         self.autoinstall = autoinstall_mgr.validate_autoinstall_template_file_path(autoinstall)
 
     def set_virt_auto_boot(self, num):

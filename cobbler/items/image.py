@@ -78,7 +78,7 @@ class Image(item.Item):
         :return: The cloned instance of this object.
         """
         _dict = self.to_dict()
-        cloned = Image(self.collection_mgr)
+        cloned = Image()
         cloned.from_dict(_dict)
         return cloned
 
@@ -109,7 +109,7 @@ class Image(item.Item):
         """
         return utils.set_arch(self, arch)
 
-    def set_autoinstall(self, autoinstall):
+    def set_autoinstall(self, autoinstall, collection_mgr):
         """
         Set the automatic installation file path, this must be a local file.
 
@@ -121,9 +121,10 @@ class Image(item.Item):
 
         :param autoinstall: local automatic installation template file path
         :type autoinstall: str
+        :param collection_mgr: The collection manager to have access to all information in Cobbler.
         """
 
-        autoinstall_mgr = autoinstall_manager.AutoInstallationManager(self.collection_mgr)
+        autoinstall_mgr = autoinstall_manager.AutoInstallationManager(collection_mgr)
         self.autoinstall = autoinstall_mgr.validate_autoinstall_template_file_path(autoinstall)
 
     def set_file(self, filename):

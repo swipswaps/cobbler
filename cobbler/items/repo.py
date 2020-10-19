@@ -83,7 +83,7 @@ class Repo(item.Item):
         :return: The cloned instance of this object.
         """
         _dict = self.to_dict()
-        cloned = Repo(self.collection_mgr)
+        cloned = Repo()
         cloned.from_dict(_dict)
         return cloned
 

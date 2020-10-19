@@ -171,7 +171,7 @@ class Item(object):
 
     TYPE_NAME = "generic"
 
-    def __init__(self, collection_mgr, is_subobject=False):
+    def __init__(self, cache_enabled=True, is_subobject=False):
         """
         Constructor.  Requires a back reference to the CollectionManager object.
 
@@ -194,12 +194,10 @@ class Item(object):
         use False for is_subobject and the parent object will (therefore) have a different type.
         """
 
-        self.collection_mgr = collection_mgr
-        self.settings = self.collection_mgr._settings
+        self.cache_enabled = cache_enabled
         self.clear(is_subobject)        # reset behavior differs for inheritance cases
         self.parent = ''                # all objects by default are not subobjects
         self.children = {}              # caching for performance reasons, not serialized
-        self.log_func = self.collection_mgr.api.log
         self.ctime = 0                  # to be filled in by collection class
         self.mtime = 0                  # to be filled in by collection class
         self.uid = ""                   # to be filled in by collection class
@@ -248,7 +246,7 @@ class Item(object):
 
         :return: A dictionary with all values present in this object.
         """
-        if not self.settings.cache_enabled:
+        if not self.cache_enabled:
             return utils.to_dict_from_fields(self, self.get_fields())
 
         value = self.get_from_cache(self)
@@ -540,7 +538,7 @@ class Item(object):
         else:
             return self.__find_compare(value, data[key])
 
-    def dump_vars(self, data, format=True):
+    def dump_vars(self, api=None, format=True):
         """
         Dump all variables.
 
@@ -548,7 +546,7 @@ class Item(object):
         :param format: Whether to format the output or not.
         :return: The raw or formatted data.
         """
-        raw = utils.blender(self.collection_mgr.api, False, self)
+        raw = utils.blender(api, False, self)
         if format:
             return pprint.pformat(raw)
         else:

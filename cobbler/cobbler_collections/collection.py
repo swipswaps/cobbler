@@ -226,7 +226,7 @@ class Collection(object):
             # this should only happen for systems
             for iname in list(ref.interfaces.keys()):
                 # clear all these out to avoid DHCP/DNS conflicts
-                ref.set_dns_name("", iname)
+                ref.set_dns_name("", iname, self.collection_mgr.settings().allow_duplicate_hostnames)
                 ref.set_mac_address("", iname)
                 ref.set_ip_address("", iname)
 

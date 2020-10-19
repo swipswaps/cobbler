@@ -404,7 +404,7 @@ class ImportSignatureManager(object):
 
             new_profile.set_name(name)
             new_profile.set_distro(name)
-            new_profile.set_autoinstall(self.autoinstall_file)
+            new_profile.set_autoinstall(self.autoinstall_file, self.collection_mgr)
 
             # depending on the name of the profile we can
             # define a good virt-type for usage with koan

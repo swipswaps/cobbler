@@ -58,7 +58,7 @@ class Package(resource.Resource):
         :return: The cloned instance of this object.
         """
         _dict = self.to_dict()
-        cloned = Package(self.collection_mgr)
+        cloned = Package()
         cloned.from_dict(_dict)
         return cloned
 
