@@ -27,7 +27,6 @@ zypper -n in make gzip sed git hg
 sed -e "s|/var/lib/tftpboot|/srv/tftpboot|g" -i cobbler/settings.py config/cobbler/settings
 
 # Install and setup testing framework
-pip3 install pytest-django
 pip3 install pytest-pythonpath
 
 # set SECRET_KEY for django tests
