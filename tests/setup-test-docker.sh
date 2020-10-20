@@ -29,9 +29,6 @@ sed -e "s|/var/lib/tftpboot|/srv/tftpboot|g" -i cobbler/settings.py config/cobbl
 # Install and setup testing framework
 pip3 install pytest-pythonpath
 
-# set SECRET_KEY for django tests
-sed -i s/SECRET_KEY.*/'SECRET_KEY\ =\ "qwertyuiopasdfghl;"'/ cobbler/web/settings.py
-
 # Install and upgrade all dependecys
 pip3 install --upgrade pip
 pip3 install .[lint,test]
