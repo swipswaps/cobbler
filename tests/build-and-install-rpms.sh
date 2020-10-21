@@ -32,12 +32,6 @@ echo "==> Docker logs ..."
 docker logs cobbler
 echo "==> Install fresh RPMs ..."
 docker exec -it cobbler bash -c 'rpm -Uvh rpm-build/cobbler-*.noarch.rpm'
-# === HACK === HACK === HACK
-# To get around this Apache error:
-# AH02240: Server should be SSL-aware but has no certificate configured [Hint: SSLCertificateFile] (/etc/httpd/conf.d/cobbler_web.conf:13)
-# make cobbler_web listen on HTTP instead of HTTPS.
-echo "==> Use HTTP instead of HTTPS ..."
-docker exec -it cobbler bash -c 'sed -i s/443/80/g /etc/httpd/conf.d/cobbler_web.conf'
 echo "==> Restart Apache and Cobbler daemon ..."
 docker exec -it cobbler bash -c 'systemctl daemon-reload && systemctl restart httpd cobblerd'
 # END === HACK ===
