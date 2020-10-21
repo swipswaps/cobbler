@@ -33,7 +33,7 @@ echo "==> Install fresh packages ..."
 docker exec -it cobbler bash -c 'dpkg -i deb-build/DEBS/all/cobbler*.deb'
 
 echo "==> Restart Apache and Cobbler daemon ..."
-docker exec -it cobbler bash -c 'a2enconf cobbler cobbler_web && systemctl daemon-reload && systemctl restart apache2 cobblerd'
+docker exec -it cobbler bash -c 'a2enconf cobbler && systemctl daemon-reload && systemctl restart apache2 cobblerd'
 
 echo "==> Wait 3 sec. and show Cobbler version ..."
 docker exec -it cobbler bash -c 'sleep 3 && cobbler --version'
