@@ -246,14 +246,10 @@ Obsoletes:      cobbler-nsupdate < 3.0.99
 Provides:       cobbler-nsupdate = %{version}-%{release}
 
 %description
-Cobbler is a network install server. Cobbler supports PXE, ISO
-virtualized installs, and re-installing existing Linux machines.
-The last two modes use a helper tool, 'koan', that integrates with
-cobbler. There is also a web interface 'cobbler-web'. Cobbler's
-advanced features include importing distributions from DVDs and rsync
-mirrors, kickstart templating, integrated yum mirroring, and built-in
-DHCP/DNS Management. Cobbler has a XML-RPC API for integration with
-other applications.
+Cobbler is a network install server. Cobbler supports PXE, ISO virtualized installs, and re-installing existing Linux
+machines. The last two modes use a helper tool, 'koan', that integrates with cobbler. Cobbler's advanced features
+include importing distributions from DVDs and rsync mirrors, kickstart templating, integrated yum mirroring, and
+built-in DHCP/DNS Management. Cobbler has a XML-RPC API for integration with other applications.
 
 %package tests
 Summary:        Unit tests for cobbler
@@ -366,17 +362,6 @@ if [ -e %{_localstatedir}/lib/cobbler/loaders/.cobbler_postun_cleanup ];then
 fi
 %endif
 %systemd_postun_with_restart cobblerd.service
-%endif
-
-%post web
-%if %{_vendor} == "debbuild"
-# Work around broken attr support
-# Cf. https://github.com/debbuild/debbuild/issues/160
-chown %{apache_user}:%{apache_group} %{_datadir}/cobbler/web
-mkdir -p %{_sharedstatedir}/cobbler/webui_sessions
-chown %{apache_user}:root %{_sharedstatedir}/cobbler/webui_sessions
-chmod 700 %{_sharedstatedir}/cobbler/webui_sessions
-chown %{apache_user}:%{apache_group} %{apache_dir}/cobbler_webui_content/
 %endif
 
 %files
