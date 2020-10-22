@@ -313,26 +313,31 @@ class Item(object):
             results.extend(grandkids)
         return results
 
-    def get_parent(self):
+    def get_parent(self, collection_mgr):
         """
         For objects with a tree relationship, what's the parent object?
+
+        :param collection_mgr: If the object has a tree relationship, please give the information resolver instance
+                               here.
         """
         return None
 
-    def get_conceptual_parent(self):
+    def get_conceptual_parent(self, collection_mgr):
         """
         The parent may just be a superclass for something like a subprofile. Get the first parent of a different type.
 
         :return: The first item which is conceptually not from the same type.
+        :param collection_mgr: If the object has a tree relationship, please give the information resolver instance
+                               here.
         """
         mtype = type(self)
-        parent = self.get_parent()
+        parent = self.get_parent(collection_mgr)
         while parent is not None:
             ptype = type(parent)
             if mtype != ptype:
                 self.conceptual_parent = parent
                 return parent
-            parent = parent.get_parent()
+            parent = parent.get_parent(collection_mgr)
         return None
 
     def set_name(self, name):
@@ -590,5 +595,3 @@ class Item(object):
         """
         if not self.name:
             raise CX("Name is required")
-
-# EOF

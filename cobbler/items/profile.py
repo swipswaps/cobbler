@@ -111,17 +111,20 @@ class Profile(item.Item):
         """
         return FIELDS
 
-    def get_parent(self):
+    def get_parent(self, collection_mgr):
         """
         Return object next highest up the tree.
+
+        :param collection_mgr: If the object has a tree relationship, please give the information resolver instance
+                               here.
         """
         # TODO: Remove need to find this here. Move this into the collection. This is a data storage object.
         if not self.parent:
             if self.distro is None:
                 return None
-            result = self.collection_mgr.distros().find(name=self.distro)
+            result = collection_mgr.distros().find(name=self.distro)
         else:
-            result = self.collection_mgr.profiles().find(name=self.parent)
+            result = collection_mgr.profiles().find(name=self.parent)
         return result
 
     def check_if_valid(self):
@@ -135,7 +138,7 @@ class Profile(item.Item):
         # distro validation
         distro = self.get_conceptual_parent()
         if distro is None:
-            raise CX("Error with profile %s - distro is required" % (self.name))
+            raise CX("Error with profile %s - distro is required" % self.name)
 
     #
     # specific methods for item.Profile
@@ -159,8 +162,7 @@ class Profile(item.Item):
             self.parent = ''
             return
         if parent_name == self.name:
-            # check must be done in two places as set_parent could be called before/after
-            # set_name...
+            # check must be done in two places as set_parent could be called before/after set_name...
             raise CX(_("self parentage is weird"))
         found = self.collection_mgr.profiles().find(name=parent_name)
         if found is None:

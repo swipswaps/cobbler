@@ -95,12 +95,6 @@ class Repo(item.Item):
         """
         return FIELDS
 
-    def get_parent(self):
-        """
-        Currently the Cobbler object space does not support subobjects of this object as it is conceptually not useful.
-        """
-        return None
-
     def check_if_valid(self):
         """
         Checks if the object is valid. Currently checks for name and mirror to be present.

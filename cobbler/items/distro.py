@@ -106,9 +106,12 @@ class Distro(item.Item):
         """
         return FIELDS
 
-    def get_parent(self):
+    def get_parent(self, collection_mgr):
         """
         Distros don't have parent objects.
+
+        :param collection_mgr: If the object has a tree relationship, please give the information resolver instance
+                               here.
         """
         return None
 

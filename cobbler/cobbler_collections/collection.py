@@ -422,10 +422,11 @@ class Collection(object):
             # save the tree, so if neccessary, scripts can examine it.
             if with_triggers:
                 utils.run_triggers(self.api, ref, "/var/lib/cobbler/triggers/change/*", [], logger)
-                utils.run_triggers(self.api, ref, "/var/lib/cobbler/triggers/add/%s/post/*" % self.collection_type(), [], logger)
+                utils.run_triggers(self.api, ref, "/var/lib/cobbler/triggers/add/%s/post/*" % self.collection_type(),
+                                   [], logger)
 
         # update children cache in parent object
-        parent = ref.get_parent()
+        parent = ref.get_parent(self.collection_mgr)
         if parent is not None:
             parent.children[ref.name] = ref
 

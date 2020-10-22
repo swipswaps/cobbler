@@ -615,10 +615,10 @@ def grab_tree(api_handle, item):
     # TODO: Move into item.py
     settings = api_handle.settings()
     results = [item]
-    parent = item.get_parent()
+    parent = item.get_parent(api_handle._collection_mgr)
     while parent is not None:
         results.append(parent)
-        parent = parent.get_parent()
+        parent = parent.get_parent(api_handle._collection_mgr)
     results.append(settings)
     return results
 

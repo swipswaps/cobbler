@@ -151,17 +151,20 @@ class System(item.Item):
         # FIXME: most definitely doesn't grok interfaces yet.
         return utils.from_dict_from_fields(self, seed_data, FIELDS)
 
-    def get_parent(self):
+    def get_parent(self, collection_mgr):
         """
         Return object next highest up the tree.
+
+        :param collection_mgr: If the object has a tree relationship, please give the information resolver instance
+                               here.
         """
         # TODO: Remove need to find this here. Move this into the collection. This is a data storage object.
         if (self.parent is None or self.parent == '') and self.profile:
-            return self.collection_mgr.profiles().find(name=self.profile)
+            return collection_mgr.profiles().find(name=self.profile)
         elif (self.parent is None or self.parent == '') and self.image:
-            return self.collection_mgr.images().find(name=self.image)
+            return collection_mgr.images().find(name=self.image)
         else:
-            return self.collection_mgr.systems().find(name=self.parent)
+            return collection_mgr.systems().find(name=self.parent)
 
     def check_if_valid(self):
         if self.name is None or self.name == "":
@@ -323,7 +326,7 @@ class System(item.Item):
 
 # ---
 
-    def set_dns_name(self, dns_name, interface, allow_duplicate_hostnames):
+    def set_dns_name(self, dns_name, interface, allow_duplicate_hostnames=False):
         """
         Set DNS name for interface.
 
@@ -337,7 +340,7 @@ class System(item.Item):
         @returns: True or CX
         """
         dns_name = validate.hostname(dns_name)
-        if dns_name != "" and utils.input_boolean(allow_duplicate_hostnames) is False:
+        if dns_name != "" and not allow_duplicate_hostnames:
             matched = self.collection_mgr.api.find_items("system", {"dns_name": dns_name})
             for x in matched:
                 if x.name != self.name:
@@ -355,16 +358,20 @@ class System(item.Item):
         """
         self.hostname = validate.hostname(hostname)
 
-    def set_ip_address(self, address, interface):
+    def set_ip_address(self, address, interface, allow_duplicate_ips=False):
         """
         Set IPv4 address on interface.
 
-        @param: str address (ip address)
-        @param: str interface (interface name)
-        @returns: True or CX
+        :param address: IP address
+        :type address: str
+        :param interface: interface name
+        :type interface: str
+        :param allow_duplicate_ips: Weather to allow that an entry in Cobbler may have duplicate IPs or not.
+        :type allow_duplicate_ips: bool
+        :returns: True or CX
         """
         address = validate.ipv4_address(address)
-        if address != "" and utils.input_boolean(self.collection_mgr._settings.allow_duplicate_ips) is False:
+        if address != "" and not allow_duplicate_ips:
             matched = self.collection_mgr.api.find_items("system", {"ip_address": address})
             for x in matched:
                 if x.name != self.name:
@@ -373,18 +380,22 @@ class System(item.Item):
         intf = self.__get_interface(interface)
         intf["ip_address"] = address
 
-    def set_mac_address(self, address, interface):
+    def set_mac_address(self, address, interface, allow_duplicate_macs=False):
         """
         Set mac address on interface.
 
-        @param: str address (mac address)
-        @param: str interface (interface name)
-        @returns: True or CX
+        :param address: MAC address
+        :type address: str
+        :param interface: interface name
+        :type interface: str
+        :param allow_duplicate_macs: Weather to allow duplicate MACs or not.
+        :type allow_duplicate_macs: bool
+        :returns: True or CX
         """
         address = validate.mac_address(address)
         if address == "random":
             address = utils.get_random_mac(self.collection_mgr.api)
-        if address != "" and utils.input_boolean(self.collection_mgr._settings.allow_duplicate_macs) is False:
+        if address != "" and not allow_duplicate_macs:
             matched = self.collection_mgr.api.find_items("system", {"mac_address": address})
             for x in matched:
                 if x.name != self.name:
@@ -549,8 +560,8 @@ class System(item.Item):
 
     def set_profile(self, profile_name):
         """
-        Set the system to use a certain named profile. The profile
-        must have already been loaded into the Profiles collection.
+        Set the system to use a certain named profile. The profile must have already been loaded into the Profiles
+        collection.
         """
         old_parent = self.get_parent()
         if profile_name in ["delete", "None", "~", ""] or profile_name is None:
@@ -575,8 +586,8 @@ class System(item.Item):
 
     def set_image(self, image_name):
         """
-        Set the system to use a certain named image.  Works like set_profile
-        but cannot be used at the same time.  It's one or the other.
+        Set the system to use a certain named image. Works like set_profile but cannot be used at the same time. It's
+        one or the other.
         """
         old_parent = self.get_parent()
         if image_name in ["delete", "None", "~", ""] or image_name is None:

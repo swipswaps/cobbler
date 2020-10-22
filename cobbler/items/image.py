@@ -90,12 +90,6 @@ class Image(item.Item):
         """
         return FIELDS
 
-    def get_parent(self):
-        """
-        Images have no parent object.
-        """
-        return None
-
     #
     # specific methods for item.Image
     #
